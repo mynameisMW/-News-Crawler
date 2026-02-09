@@ -6,6 +6,8 @@ import os
 from pathlib import Path
 from typing import List
 
+from dotenv import load_dotenv
+
 from news_crawler.config import AppConfig
 from news_crawler.news_fetcher import Article, NewsFetcher
 from news_crawler.notion_client import NotionClient
@@ -30,6 +32,9 @@ def gather_articles(fetcher: NewsFetcher, config: AppConfig) -> List[Article]:
 
 
 def main() -> None:
+    # .env 파일에서 환경변수 로드
+    load_dotenv()
+    
     parser = argparse.ArgumentParser(
         description="Fetch news from APIs and store them in Notion."
     )

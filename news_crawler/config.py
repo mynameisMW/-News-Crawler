@@ -17,6 +17,7 @@ class NewsSourceConfig:
     api_key_env: Optional[str] = None
     api_key_param: Optional[str] = None
     api_key_header: Optional[str] = None
+    headers_env: Dict[str, str] = field(default_factory=dict)
 
 
 @dataclass

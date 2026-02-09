@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List
+import re
 
 import requests
 
@@ -43,6 +44,11 @@ class NewsFetcher:
             params[source.api_key_param] = api_key
         if api_key and source.api_key_header:
             headers[source.api_key_header] = api_key
+        # Add custom headers from environment variables
+        for header_name, env_var_name in source.headers_env.items():
+            env_value = _read_env(env_var_name)
+            if env_value:
+                headers[header_name] = env_value
         return requests.get(
             source.base_url,
             params=params,
@@ -65,6 +71,9 @@ class NewsFetcher:
             url = get_by_path(item, source.url_path)
             published_at = get_by_path(item, source.published_at_path)
             summary = get_by_path(item, source.summary_path) if source.summary_path else None
+            # Remove HTML tags from summary
+            if summary:
+                summary = re.sub(r'<[^>]+>', '', summary)
             yield Article(
                 title=title or "",
                 url=url or "",

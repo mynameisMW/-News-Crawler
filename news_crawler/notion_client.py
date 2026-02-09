@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Iterable, Optional
+from email.utils import parsedate_to_datetime
 
 import requests
 
@@ -54,18 +55,54 @@ class NotionClient:
             "parent": {"database_id": self.config.database_id},
             "properties": {
                 props["title"]: {
-                    "title": [{"text": {"content": article.title}}]
+                    "rich_text": [{"text": {"content": article.title}}]
                 },
                 props["url"]: {"url": article.url},
-                props["source"]: {"select": {"name": article.source}},
+                props["source"]: {
+                    "rich_text": [{"text": {"content": article.source}}]
+                },
             },
+            "children": [
+                {
+                    "object": "block",
+                    "type": "heading_2",
+                    "heading_2": {
+                        "rich_text": [{"text": {"content": article.title}}],
+                        "is_toggleable": False
+                    }
+                },
+                {
+                    "object": "block",
+                    "type": "paragraph",
+                    "paragraph": {
+                        "rich_text": [{"text": {"content": f"출처: {article.source} | 링크: {article.url}"}}]
+                    }
+                }
+            ]
         }
         if article.published_at:
+            # Convert to ISO 8601 format for Notion
+            iso_date = self._convert_to_iso8601(article.published_at)
             payload["properties"][props["published_at"]] = {
-                "date": {"start": article.published_at}
+                "date": {"start": iso_date}
             }
         if article.summary:
-            payload["properties"][props["summary"]] = {
-                "rich_text": [{"text": {"content": article.summary}}]
-            }
+            payload["children"].append({
+                "object": "block",
+                "type": "paragraph",
+                "paragraph": {
+                    "rich_text": [{"text": {"content": article.summary}}]
+                }
+            })
         return payload
+
+    def _convert_to_iso8601(self, date_str: str) -> str:
+        """Convert various date formats to ISO 8601 format (YYYY-MM-DD or YYYY-MM-DDTHH:mm:ss)."""
+        try:
+            # Try to parse RFC 2822 format (e.g., "Mon, 09 Feb 2026 10:06:00 +0900")
+            dt = parsedate_to_datetime(date_str)
+            # Return ISO 8601 date format
+            return dt.strftime("%Y-%m-%d")
+        except (TypeError, ValueError):
+            # If it's already in ISO format or another format, return as is
+            return date_str

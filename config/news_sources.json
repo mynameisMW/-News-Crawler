@@ -4,28 +4,31 @@
     "api_key": "",
     "database_id": "",
     "properties": {
-      "title": "Title",
-      "url": "URL",
-      "source": "Source",
-      "published_at": "PublishedAt",
-      "summary": "Summary"
+      "title": "title",
+      "url": "url",
+      "source": "source",
+      "published_at": "published_at",
+      "summary": "summary"
     }
   },
   "sources": [
     {
-      "name": "NewsAPI",
-      "base_url": "https://newsapi.org/v2/top-headlines",
+      "name": "Naver News",
+      "base_url": "https://openapi.naver.com/v1/search/news.json",
       "params": {
-        "country": "us",
-        "pageSize": 10
+        "query": "키워드",
+        "display": 10,
+        "sort": "date"
       },
-      "items_path": "articles",
+      "items_path": "items",
       "title_path": "title",
-      "url_path": "url",
-      "published_at_path": "publishedAt",
+      "url_path": "link",
+      "published_at_path": "pubDate",
       "summary_path": "description",
-      "api_key_env": "NEWSAPI_KEY",
-      "api_key_param": "apiKey"
+      "headers_env": {
+        "X-Naver-Client-Id": "NAVER_CLIENT_ID",
+        "X-Naver-Client-Secret": "NAVER_CLIENT_SECRET"
+      }
     }
   ]
 }
