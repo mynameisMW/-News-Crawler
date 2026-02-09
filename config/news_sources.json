@@ -1,0 +1,31 @@
+{
+  "timeout_seconds": 15,
+  "notion": {
+    "api_key": "",
+    "database_id": "",
+    "properties": {
+      "title": "Title",
+      "url": "URL",
+      "source": "Source",
+      "published_at": "PublishedAt",
+      "summary": "Summary"
+    }
+  },
+  "sources": [
+    {
+      "name": "NewsAPI",
+      "base_url": "https://newsapi.org/v2/top-headlines",
+      "params": {
+        "country": "us",
+        "pageSize": 10
+      },
+      "items_path": "articles",
+      "title_path": "title",
+      "url_path": "url",
+      "published_at_path": "publishedAt",
+      "summary_path": "description",
+      "api_key_env": "NEWSAPI_KEY",
+      "api_key_param": "apiKey"
+    }
+  ]
+}
